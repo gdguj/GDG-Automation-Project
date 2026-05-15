@@ -1,4 +1,4 @@
-# GDGoC Applicant Evaluation System
+# GDGC AI Applicant Evaluation System
 
 An AI-powered applicant screening tool built by the GDG on Campus University of Jeddah tech team. This system automates the evaluation and ranking of club membership applicants using configurable scoring criteria and AI analysis — replacing manual review with a consistent, data-driven pipeline.
 
@@ -40,8 +40,6 @@ GDG-Automation-Project/
 ├── app.py                # Streamlit admin UI
 ├── requirements.txt      # Python dependencies
 ├── .gitignore
-├── SCORING_GUIDE.md      # Detailed scoring criteria reference
-├── QUICK_REFERENCE.md    # Quick setup cheat sheet
 └── assets/               # UI images and logos
 ```
 
