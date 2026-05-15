@@ -1,93 +1,133 @@
-# دليل تشغيل مشروع الأتمتة 
+# GDG on Campus UJ — AI Evaluation Automation Project
 
-هذا المجلد يحتوي على دمج عمل "أمل" (جلب البيانات)، عمل "وجد" (التحقق من الأهلية)، والآن **نظام التقييم الشامل**.
+An intelligent applicant screening system built by the GDG on Campus University of Jeddah tech team. This project automates the evaluation of club membership applicants using AI-powered analysis, replacing a manual review process with a consistent, data-driven scoring pipeline.
 
-## الخطوات للتشغيل:
+---
 
-### 1. فتح المجلد في VS Code
-* افتحي برنامج **Visual Studio Code**.
-* اختاري **File** ثم **Open Folder**.
-* اختاري مجلد `GDSC_Project`.
+## What It Does
 
-### 2. تثبيت المكتبات اللازمة
-افتحي التيرمينال داخل VS Code (عن طريق `Ctrl + ` `) واكتبي الأمر التالي:
+When applicants fill out the GDG registration form, this system automatically:
+
+1. **Fetches applicant data** from Google Sheets
+2. **Checks eligibility** based on technical background and interest in AI/automation
+3. **Scores each applicant** using a weighted AI evaluation model
+4. **Ranks and exports** results to a structured CSV file
+
+---
+
+## Scoring System
+
+Each applicant receives a total score out of 100, calculated as follows:
+
+| Component | Weight | Description |
+|-----------|--------|-------------|
+| Motivation Quality | 40% | AI analysis of the applicant's motivation statement |
+| GPA | 30% | Converted from a 5.0 scale to a 100-point score |
+| Eligibility | 30% | Based on technical background or AI/automation interest |
+
+**Formula:**
+```
+Total Score = (Motivation Score × 0.40) + (GPA Score × 0.30) + (Eligibility Score × 0.30)
+```
+
+The motivation statement is evaluated by Groq AI across four dimensions: clarity, specificity, enthusiasm, and relevance to tech/AI/automation.
+
+---
+
+## Project Structure
+
+```
+GDG-Automation-Project/
+├── main.py               # Main pipeline runner
+├── app.py                # Streamlit UI (admin panel)
+├── requirements.txt      # Python dependencies
+├── .gitignore
+├── SCORING_GUIDE.md      # Detailed scoring criteria
+├── QUICK_REFERENCE.md    # Quick setup reference
+└── assets/               # Images and UI assets
+```
+
+---
+
+## Setup & Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/gdguj/GDG-Automation-Project.git
+cd GDG-Automation-Project
+```
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Or manually:
+
 ```bash
 pip install pandas python-dotenv groq requests
 ```
 
-### 3. التأكد من ملف المفاتيح
-* ستجدين ملفاً باسم `.env` داخل المجلد.
-* تأكدي أن مفتاح الـ API الخاص بكِ موجود فيه بهذا الشكل:
-  `GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxx`
+### 3. Configure your API key
 
-### 4. تشغيل الكود
-* افتحي ملف `main.py`.
-* اضغطي على زر **Run** (المثلث في الزاوية العلوية) أو اكتبي في التيرمينال:
-  ```bash
-  python main.py
-  ```
+Create a `.env` file in the project root with your Groq API key:
 
-## ماذا سيفعل الكود؟
-
-### المرحلة 1: جلب البيانات (عمل أمل)
-- يجلب البيانات من Google Sheet تلقائياً.
-
-### المرحلة 2: التحقق من الأهلية (عمل وجد)
-- يتحقق من الخلفية التقنية أو الاهتمام بالذكاء الاصطناعي أو الأتمتة.
-- يستخدم Groq AI لتحليل نص الدافع.
-- يضيف عمودي `Eligibility` و `Reason`.
-
-### المرحلة 3: نظام التقييم الشامل (عملك الجديد!) ⭐
-نظام التقييم يحسب درجة شاملة لكل متقدم بناءً على:
-
-#### 1. تقييم المعدل (30% من الدرجة الكلية)
-- يتم تحويل المعدل من 5.0 إلى درجة من 100.
-- مثال: معدل 4.5 = (4.5/5.0) × 100 = 90 نقطة
-
-#### 2. تقييم جودة الدافع بالذكاء الاصطناعي (40% من الدرجة الكلية)
-يستخدم Groq AI لتقييم نص الدافع من 0-100 بناءً على:
-- **الوضوح والتماسك** (25 نقطة)
-- **التفاصيل والتحديد** (25 نقطة)
-- **الشغف والحماس** (25 نقطة)
-- **الصلة بالتقنية/الذكاء الاصطناعي/الأتمتة** (25 نقطة)
-
-#### 3. مكافأة الأهلية (30% من الدرجة الكلية)
-- متقدم مقبول = 100 نقطة
-- متقدم مرفوض = 0 نقطة
-
-### صيغة الحساب النهائية:
 ```
-الدرجة الكلية = (درجة المعدل × 0.30) + (درجة جودة الدافع × 0.40) + (درجة الأهلية × 0.30)
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxx
 ```
 
-## ملفات الإخراج:
+### 4. Run the pipeline
 
-### `validated_applicants_with_scores.csv`
-يحتوي على جميع البيانات مع الأعمدة الإضافية التالية:
-- `GPA_Score`: درجة المعدل (0-100)
-- `Motivation_Score`: درجة جودة الدافع (0-100)
-- `Motivation_Feedback`: تعليقات AI على جودة الدافع
-- `Eligibility_Score`: درجة الأهلية (0 أو 100)
-- `Total_Score`: الدرجة الكلية النهائية (0-100)
-- `Rank`: الترتيب (1 = الأفضل)
+```bash
+python main.py
+```
 
-## مثال على المخرجات:
+Or launch the admin panel:
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## Output
+
+The pipeline generates `validated_applicants_with_scores.csv` containing:
+
+| Column | Description |
+|--------|-------------|
+| `GPA_Score` | GPA converted to a 0–100 score |
+| `Motivation_Score` | AI-rated motivation quality (0–100) |
+| `Motivation_Feedback` | AI comments on the motivation statement |
+| `Eligibility_Score` | 100 if eligible, 0 if not |
+| `Total_Score` | Final weighted score (0–100) |
+| `Rank` | Applicant ranking (1 = highest score) |
+
+### Example output
 
 ```
 Sara Ahmed:
-  GPA Score: 90.0/100 (GPA: 4.5/5.0)
-  Motivation Score: 85/100
-  Feedback: Clear expression of AI interest with specific learning goals
-  Eligibility Score: 100/100 (Accepted)
-  → TOTAL SCORE: 88.5/100
+  GPA Score:         90.0 / 100  (GPA: 4.5 / 5.0)
+  Motivation Score:  85 / 100
+  Feedback:          Clear expression of AI interest with specific learning goals
+  Eligibility Score: 100 / 100   (Eligible)
+  → TOTAL SCORE:     88.5 / 100  |  Rank: #1
 ```
 
-## الميزات الجديدة:
-✨ نظام تقييم شامل ومتوازن
-✨ تحليل ذكي لجودة الدافع باستخدام AI
-✨ ترتيب تلقائي للمتقدمين
-✨ إحصائيات شاملة للنتائج
-✨ تعليقات مفصلة لكل متقدم
+---
+
+## Tech Stack
+
+- **Python** — core pipeline
+- **Groq API** — AI-powered motivation analysis (free tier)
+- **Pandas** — data processing
+- **Streamlit** — admin UI
+- **Google Sheets** — applicant data source
 
 ---
-تم تطوير نظام التقييم باستخدام Groq API المجاني 🚀
+
+## Team
+
+Developed by the GDG on Campus University of Jeddah development team (2025–2026).
