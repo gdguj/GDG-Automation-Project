@@ -1,36 +1,34 @@
-# GDG on Campus UJ — AI Evaluation Automation Project
+# GDGoC Applicant Evaluation System
 
-An intelligent applicant screening system built by the GDG on Campus University of Jeddah tech team. This project automates the evaluation of club membership applicants using AI-powered analysis, replacing a manual review process with a consistent, data-driven scoring pipeline.
+An AI-powered applicant screening tool built by the GDG on Campus University of Jeddah tech team. This system automates the evaluation and ranking of club membership applicants using configurable scoring criteria and AI analysis — replacing manual review with a consistent, data-driven pipeline.
 
 ---
 
-## What It Does
+## How It Works
 
-When applicants fill out the GDG registration form, this system automatically:
+The system processes applicant data from a Google Sheet or uploaded Excel/CSV file through three stages:
 
-1. **Fetches applicant data** from Google Sheets
-2. **Checks eligibility** based on technical background and interest in AI/automation
-3. **Scores each applicant** using a weighted AI evaluation model
-4. **Ranks and exports** results to a structured CSV file
+1. **Eligibility Check** — AI reads each applicant's motivation text and checks it against custom criteria defined by the organizer (e.g. "technical background", "AI interest"). Each applicant is marked Accepted or Rejected.
+
+2. **Column Scoring** — The organizer selects which columns to score (e.g. motivation statement, project experience) and assigns a weight to each. The AI scores every selected field from 0–100 based on clarity, specificity, passion, and relevance to the event.
+
+3. **Final Ranking** — A weighted total score is calculated for each applicant and they are ranked from highest to lowest.
 
 ---
 
 ## Scoring System
 
-Each applicant receives a total score out of 100, calculated as follows:
+Eligibility is always fixed at **30%** of the total score. The remaining **70%** is distributed across the columns the organizer selects, with custom weights that must sum to 100%.
 
-| Component | Weight | Description |
-|-----------|--------|-------------|
-| Motivation Quality | 40% | AI analysis of the applicant's motivation statement |
-| GPA | 30% | Converted from a 5.0 scale to a 100-point score |
-| Eligibility | 30% | Based on technical background or AI/automation interest |
+| Component | Weight |
+|-----------|--------|
+| Eligibility (Accepted = 100, Rejected = 0) | Fixed at 30% |
+| Organizer-selected columns (AI-scored 0–100) | 70% total, split by custom weights |
 
 **Formula:**
 ```
-Total Score = (Motivation Score × 0.40) + (GPA Score × 0.30) + (Eligibility Score × 0.30)
+Total Score = (Column Scores × their weights × 0.70) + (Eligibility Score × 0.30)
 ```
-
-The motivation statement is evaluated by Groq AI across four dimensions: clarity, specificity, enthusiasm, and relevance to tech/AI/automation.
 
 ---
 
@@ -38,18 +36,18 @@ The motivation statement is evaluated by Groq AI across four dimensions: clarity
 
 ```
 GDG-Automation-Project/
-├── main.py               # Main pipeline runner
-├── app.py                # Streamlit UI (admin panel)
+├── main.py               # Core pipeline: data loading, eligibility, scoring
+├── app.py                # Streamlit admin UI
 ├── requirements.txt      # Python dependencies
 ├── .gitignore
-├── SCORING_GUIDE.md      # Detailed scoring criteria
-├── QUICK_REFERENCE.md    # Quick setup reference
-└── assets/               # Images and UI assets
+├── SCORING_GUIDE.md      # Detailed scoring criteria reference
+├── QUICK_REFERENCE.md    # Quick setup cheat sheet
+└── assets/               # UI images and logos
 ```
 
 ---
 
-## Setup & Installation
+## Setup
 
 ### 1. Clone the repository
 
@@ -64,70 +62,67 @@ cd GDG-Automation-Project
 pip install -r requirements.txt
 ```
 
-Or manually:
+### 3. Add your API key
 
-```bash
-pip install pandas python-dotenv groq requests
-```
-
-### 3. Configure your API key
-
-Create a `.env` file in the project root with your Groq API key:
+Create a `.env` file in the project root:
 
 ```
 GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxx
 ```
 
-### 4. Run the pipeline
+### 4. Run
 
+**Terminal mode (interactive):**
 ```bash
 python main.py
 ```
 
-Or launch the admin panel:
-
+**Streamlit admin panel:**
 ```bash
 streamlit run app.py
 ```
 
 ---
 
+## Using the Admin Panel
+
+1. Enter the event name
+2. Load data via Google Sheet URL or upload an Excel/CSV file
+3. Select which column contains the motivation/eligibility text
+4. Choose which columns the AI should score
+5. Set weights for each scoring column (must total 100%)
+6. Enter eligibility criteria (one per line)
+7. Click **Run Evaluation**
+
+Results are displayed in a ranked table and can be downloaded as a CSV.
+
+---
+
 ## Output
 
-The pipeline generates `validated_applicants_with_scores.csv` containing:
+The pipeline produces a results CSV with:
 
 | Column | Description |
 |--------|-------------|
-| `GPA_Score` | GPA converted to a 0–100 score |
-| `Motivation_Score` | AI-rated motivation quality (0–100) |
-| `Motivation_Feedback` | AI comments on the motivation statement |
-| `Eligibility_Score` | 100 if eligible, 0 if not |
+| `[Column]_Score` | AI score for each selected column (0–100) |
+| `[Column]_Feedback` | AI feedback for each scored column |
+| `Eligibility` | Accepted or Rejected |
+| `Eligibility_Score` | 100 if Accepted, 0 if Rejected |
 | `Total_Score` | Final weighted score (0–100) |
-| `Rank` | Applicant ranking (1 = highest score) |
-
-### Example output
-
-```
-Sara Ahmed:
-  GPA Score:         90.0 / 100  (GPA: 4.5 / 5.0)
-  Motivation Score:  85 / 100
-  Feedback:          Clear expression of AI interest with specific learning goals
-  Eligibility Score: 100 / 100   (Eligible)
-  → TOTAL SCORE:     88.5 / 100  |  Rank: #1
-```
+| `Rank` | Applicant ranking (1 = best) |
 
 ---
 
 ## Tech Stack
 
 - **Python** — core pipeline
-- **Groq API** — AI-powered motivation analysis (free tier)
+- **Groq API (LLaMA 3.1)** — AI scoring and eligibility analysis
 - **Pandas** — data processing
 - **Streamlit** — admin UI
-- **Google Sheets** — applicant data source
+- **Google Sheets / Excel / CSV** — applicant data sources
 
 ---
 
 ## Team
 
-Developed by the GDG on Campus University of Jeddah development team (2025–2026).
+Developed by the GDG on Campus University of Jeddah development team — 2025/2026.
